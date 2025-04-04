@@ -2,6 +2,7 @@ import express from "express";
 import Admin from "../models/admin";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import Course from "../models/course";
 
 const router = express.Router();
 
@@ -67,5 +68,28 @@ router.post("/signin", async (req, res) => {
         return;
     }
 });
+
+router.post("/course", async (req, res) => {
+    const { title, description, price, imgUrl, userId } = req.body;
+    if(!title || !description || !price || !imgUrl){
+        res.status(401).json({
+            message: "Data can't be empty."
+        });
+        return;
+    }
+
+    const course = new Course({
+        title, 
+        description,
+        price,
+        imgUrl,
+        creatorId: userId
+    });
+    await course.save();
+    res.status(201).json({
+        course,
+        message: "Course created successfully."
+    })
+})
 
 export default router;

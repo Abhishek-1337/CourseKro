@@ -5,6 +5,6 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/auth/admin", adminRouter);
+app.use("/api/v1/admin", adminRouter);
 
 export default app;
