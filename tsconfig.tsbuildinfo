@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/server.ts","./src/models/admin.ts","./src/models/course.ts","./src/models/middlewares/globalmiddleswares.ts","./src/routes/admin.ts"],"version":"5.8.2"}
+{"root":["./src/index.ts","./src/server.ts","./src/models/admin.ts","./src/models/course.ts","./src/models/middlewares/globalmiddleswares.ts","./src/routes/admin.ts","./src/routes/middlewares/authmiddleware.ts"],"version":"5.8.2"}

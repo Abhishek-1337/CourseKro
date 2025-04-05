@@ -3,6 +3,7 @@ import Admin from "../models/admin";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import Course from "../models/course";
+import * as authMiddleware from "./middlewares/authMiddleware";
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.post("/signup", async (req, res) => {
         });
 
         const userId = user._id;
-        const token = await jwt.sign({userId}, "abhishekvish");
+        const token = await jwt.sign({userId}, process.env.jwt_key as string);
 
         res.status(201).json({
             token,
@@ -69,7 +70,7 @@ router.post("/signin", async (req, res) => {
     }
 });
 
-router.post("/course", async (req, res) => {
+router.post("/course", authMiddleware.protect, async (req, res) => {
     const { title, description, price, imgUrl, userId } = req.body;
     if(!title || !description || !price || !imgUrl){
         res.status(401).json({
