@@ -1,9 +1,10 @@
 import express from "express";
-import Admin from "../models/admin";
+import User from "../models/user";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import Course from "../models/course";
-import * as adminMiddlewares from "../middlewares/admin";
+import * as userMiddlewares from "../middlewares/user";
+import Purchase from "../models/purchase";
 
 const router = express.Router();
 
@@ -13,15 +14,23 @@ router.post("/signup", async (req, res) => {
 
     try{
 
-        const user = await Admin.create({
+        const user = await User.findOne({email});
+        if(user){
+            res.status(400).json({
+                message: "User already exist."
+            });
+            return;
+        }
+
+        const newUser = await User.create({
             firstName,
             lastName,
             email,
             password
         });
 
-        const userId = user._id;
-        const token = await jwt.sign({userId}, process.env.jwt_admin_key as string);
+        const userId = newUser._id;
+        const token = await jwt.sign({userId}, process.env.jwt_user_key as string);
 
         res.status(201).json({
             token,
@@ -47,7 +56,7 @@ router.post("/signin", async (req, res) => {
             return;
         } 
 
-        const user = await Admin.findOne({email: email});
+        const user = await User.findOne({email: email});
         if(!user || !(await bcrypt.compare(password, user.password))){
             res.status(401).json({
                 message: "Incorrect email or password."
@@ -56,7 +65,7 @@ router.post("/signin", async (req, res) => {
         }
 
         const userId = user._id;
-        const token = await jwt.sign({ userId }, process.env.jwt_admin_key as string);
+        const token = await jwt.sign({ userId }, process.env.jwt_user_key as string);
         
         res.status(200).json({
             message: "Logged in."
@@ -70,30 +79,43 @@ router.post("/signin", async (req, res) => {
     }
 });
 
-//@ts-ignore
-router.post("/course", adminMiddlewares.protect, async (req, res) => {
-    const { title, description, price, imgUrl } = req.body;
+router.post("/purchase", userMiddlewares.protect, async (req, res) => {
+   try{
+    const { courseId } = req.body;
+    //@ts-ignore
+    const userId = req.userId
 
-    const userId = req.userId;
-    if(!title || !description || !price || !imgUrl){
+    if(!courseId){
         res.status(401).json({
-            message: "Data can't be empty."
+            message: "Select a course."
         });
         return;
     }
 
-    const course = new Course({
-        title, 
-        description,
-        price,
-        imgUrl,
-        creatorId: userId
+    const user = await User.findById(userId);
+    if(!user){
+        res.status(404).json({
+            message: "User not found."
+        });
+        return;
+    }
+
+    const purchase = await Purchase.create({
+        courseId,
+        userId
     });
-    await course.save();
-    res.status(201).json({
-        course,
-        message: "Course created successfully."
+
+    res.status(200).json({
+        purchase,
+        message: "Purchase successful"
     })
-})
+   }
+   catch(ex){
+    console.log(ex);
+    res.status(400).json({
+        message: "Error while purchasing."
+    });
+   }
+});
 
 export default router;

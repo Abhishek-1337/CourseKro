@@ -3,7 +3,7 @@ import { globalAuthMiddleware } from '../middlewares/globalMiddleswares';
 
 const { Schema } = mongoose;
 
-const adminSchema = new Schema({
+const userSchema = new Schema({
     email: {
         type: String,
         unique: true,
@@ -28,7 +28,7 @@ const adminSchema = new Schema({
     }
 });
 
-globalAuthMiddleware(adminSchema);
+globalAuthMiddleware(userSchema);
 
-const Admin = mongoose.model('Admin', adminSchema);
-export default Admin;
+const User = mongoose.model('User', userSchema);
+export default User;

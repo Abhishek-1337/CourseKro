@@ -10,7 +10,7 @@ export const protect = (req, res, next) => {
 
     const token = req.headers.authorization.split(" ")[1];
     try{
-        const decoded = jwt.verify(token, process.env.jwt_key as string);
+        const decoded = jwt.verify(token, process.env.jwt_user_key as string);
         
         if(decoded) {
             if(typeof decoded === "string"){
