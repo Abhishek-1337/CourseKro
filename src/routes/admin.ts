@@ -70,30 +70,6 @@ router.post("/signin", async (req, res) => {
     }
 });
 
-//@ts-ignore
-router.post("/course", adminMiddlewares.protect, async (req, res) => {
-    const { title, description, price, imgUrl } = req.body;
 
-    const userId = req.userId;
-    if(!title || !description || !price || !imgUrl){
-        res.status(401).json({
-            message: "Data can't be empty."
-        });
-        return;
-    }
-
-    const course = new Course({
-        title, 
-        description,
-        price,
-        imgUrl,
-        creatorId: userId
-    });
-    await course.save();
-    res.status(201).json({
-        course,
-        message: "Course created successfully."
-    })
-})
 
 export default router;

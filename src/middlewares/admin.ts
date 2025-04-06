@@ -22,6 +22,7 @@ export const protect = (req: AuthRequest, res, next) => {
             }
 
             req.userId = (decoded as jwt.JwtPayload).userId;
+            req.role = 'admin';
         }
 
         next();
@@ -33,3 +34,4 @@ export const protect = (req: AuthRequest, res, next) => {
         });
     }
 };
+
