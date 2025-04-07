@@ -13,7 +13,7 @@ export const globalAuthMiddleware = (schema: Schema) => {
 
 export const restrictTo = (...roles: string[]) => {
      return (req: AuthRequest, res: Response, next: NextFunction) => {
-        if(!roles.includes(req.role)){
+        if(req.role === undefined || !roles.includes(req.role)){
             res.status(403).json({
                 message: "Access denied"
             });
