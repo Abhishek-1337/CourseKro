@@ -68,6 +68,36 @@ router.delete("/:id", adminMiddlewares.protect, restrictTo('admin'), async (req:
     }
 });
 
+router.put("/edit/:courseId", adminMiddlewares.protect, restrictTo('admin'), async (req: AuthRequest, res) => {
+    try{
+        const adminId = req.userId;
+        const { courseId } = req.params;
+        const { title, description, price, imgUrl } = req.body; 
+        const course = await Course.findById(courseId);
+
+
+        if(!course) {
+            res.status(404).json({
+                message: "Course is not available."
+            });
+            return;
+        }
+        console.log(adminId);
+        const updatedCourse = await Course.findOneAndUpdate({ _id: courseId }, {title, description, price, imgUrl}, { runValidators: true });
+
+        res.status(200).json({
+            updatedCourse,
+            message: "Course is updated successfully."
+        });
+
+    }   
+    catch(ex) {
+        res.status(500).json({
+            message: "Something went wrong."
+        });
+    }
+});
+
 router.get("/bulk", async (req, res) => {
     try{
         const courses = await Course.find({});
